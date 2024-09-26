@@ -3,11 +3,11 @@ const express = require("express");
 const morgan = require("morgan");
 const { engine } = require("express-handlebars");
 const app = express();
-const port = 3000;
+const port = 3001;
 const route = require("./routes");
 const db = require("../src/app/config/db");
 const methodOverride = require("method-override");
-
+const SortMiddleware = require("./app/middlewares/SortMiddleware");
 //connect db
 db.connect();
 
@@ -17,6 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
 
+//custom middleware
+app.use(SortMiddleware);
 //http logger
 app.use(morgan("tiny"));
 
@@ -25,9 +27,7 @@ app.engine(
   "hbs",
   engine({
     extname: ".hbs",
-    helpers: {
-      sum: (a, b) => a + b,
-    },
+    helpers: require("./helpers/Handlebars"),
   })
 );
 app.set("view engine", "hbs");
